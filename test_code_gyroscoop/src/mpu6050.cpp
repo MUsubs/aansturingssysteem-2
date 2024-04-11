@@ -27,7 +27,7 @@ float Mpu6050::getAngle(int as) {
   pitch = atan2(-x_as , sqrt(y_as * y_as + z_as * z_as)) * 180.0 / PI; //account for roll already applied
 
   roll += 1;
-  pitch += 1.5;
+  pitch += 2;
 
 //  Serial.println("roll = " + String(roll,0) + ", pitch = " + String(pitch,0));
   if (as == 1){
