@@ -6,8 +6,8 @@ Mpu6050::Mpu6050() {
 // Setup for the MPU6050 gyroscope
 void Mpu6050::gyroscoopSetup() {
     Wire.begin();                                      
-    Wire.beginTransmission(mpu_addr1);                 
-    Wire.write(0x6B);                                  
+    Wire.beginTransmission(mpu_addr1);   
+    Wire.write(0x6B);       
     Wire.write(0);
     Wire.endTransmission(true);                        
     Serial.begin(115200);
@@ -27,13 +27,19 @@ float Mpu6050::getAngle(int as) {
 // formula from https://wiki.dfrobot.com/How_to_Use_a_Three-Axis_Accelerometer_for_Tilt_Sensing
   roll = atan2(y_as , z_as) * 180.0 / PI;
   pitch = atan2(-x_as , sqrt(y_as * y_as + z_as * z_as)) * 180.0 / PI;
+  
+  yaw = atan2(-x_as, y_as) * 180.0 / PI;
+
+  
   roll += 1;
   pitch += 2;
-
-//  Serial.println("roll = " + String(roll,0) + ", pitch = " + String(pitch,0));
+  
+  // Geef de gevraagde hoek terug
   if (as == 1){
-    return roll;
-  }else{
-    return pitch;
+      return roll;
+  } else if (as == 2){
+      return pitch;
+  } else{
+    return yaw;
   }
 }

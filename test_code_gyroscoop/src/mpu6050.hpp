@@ -6,7 +6,7 @@
 
 class Mpu6050{
 private:
-    float x_as, y_as, z_as, roll, pitch, output;
+    float x_as, y_as, z_as, roll, pitch, output, yaw;
     const int mpu_addr1 = 0x68;
 
 public:
