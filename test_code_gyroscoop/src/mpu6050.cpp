@@ -3,6 +3,7 @@
 Mpu6050::Mpu6050() {
 }
 
+
 // Setup for the MPU6050 gyroscope
 void Mpu6050::gyroscoopSetup() {
     Wire.begin();                                      

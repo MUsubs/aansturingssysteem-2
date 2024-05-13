@@ -1,97 +1,120 @@
-#include "mpu6050.hpp"
-#include <QMC5883LCompass.h>
+#include "Wire.h"
+#include <MPU6050_light.h>
+#include <Servo.h>
+
+MPU6050 mpu(Wire);
+unsigned long timer = 0;
+Servo myservo;
+
+// High-pass filter variabelen
+float alpha = 0.8; // Instelbare filterfactor
+float previousX, previousY, previousZ;
+float servoPos = 90;
 
 
+// Kalman-filter variabelen
+double Q = 0.1; // Procesruis
+double R = 1;   // Meetruis
+double x = 0;   // Geschatte staat
+double P = 1;   // Geschatte foutcovariantie
+double K;       // Kalman-gain
 
-
-float alpha;
-float previousOutput;
-Mpu6050 mpu;
-QMC5883LCompass compass;
-
-float filter(float input) {
-    // Apply high-pass filter
-    float output = alpha * (previousOutput + input);
-
-    // Update previous output for next iteration
-    previousOutput = output;
-
-    return input - output;
+// Functie voor het toepassen van een high-pass filter
+float highPassFilter(float currentValue, float previousValue) {
+  return alpha * (previousValue + currentValue);
 }
 
-// void setup() {
-//   Serial.begin(115200);
-//   compass.init();
-  
-//   Serial.println("This will provide calibration settings for your QMC5883L chip. When prompted, move the magnetometer in all directions until the calibration is complete.");
-//   Serial.println("Calibration will begin in 5 seconds.");
-//   delay(5000);
 
-//   Serial.println("CALIBRATING. Keep moving your sensor...");
-//   compass.calibrate();
+void set(int pos, int val){
+  int newer = val;
+  int older = pos;
+  if ( newer > older ){
+    while ( newer > older ) {
+      newer = newer - 1;
+      myservo.write(newer);
+      delay(50);
+    }
+  }
+  if ( older > newer ) {
+    while ( older > newer ) {
+      newer = newer + 1;
+      myservo.write(newer);
+      delay(50);
+    }
+  }
+}
 
-//   Serial.println("DONE. Copy the lines below and paste it into your projects sketch.);");
-//   Serial.println();
-//   Serial.print("compass.setCalibrationOffsets(");
-//   Serial.print(compass.getCalibrationOffset(0));
-//   Serial.print(", ");
-//   Serial.print(compass.getCalibrationOffset(1));
-//   Serial.print(", ");
-//   Serial.print(compass.getCalibrationOffset(2));
-//   Serial.println(");");
-//   Serial.print("compass.setCalibrationScales(");
-//   Serial.print(compass.getCalibrationScale(0));
-//   Serial.print(", ");
-//   Serial.print(compass.getCalibrationScale(1));
-//   Serial.print(", ");
-//   Serial.print(compass.getCalibrationScale(2));
-//   Serial.println(");");
+// // Functie voor het toepassen van het Kalman-filter
+// double kalmanFilter(double measurement) {
+//     // Voorspelling
+//     double x_pred = x;
+//     double P_pred = P + Q;
+
+//     // Update
+//     K = P_pred / (P_pred + R);
+//     x = x_pred + K * (measurement - x_pred);
+//     P = (1 - K) * P_pred;
+
+//     return x; // Retourneer de gefilterde waarde
 // }
-
-// void loop() {
-//   delay(1000);
-// }
-
-
-float yawOffset = 0; // Initial yaw offset
 
 void setup() {
-    mpu.gyroscoopSetup();
-    // compass.init();
-    // compass.setCalibrationOffsets(1096.00, 781.00, 532.00);
-    // compass.setCalibrationScales(0.73, 1.02, 1.52);
-    // compass.setSmoothing(10, true);
+  Serial.begin(115200);
+  Wire.begin();
+  myservo.attach(9);
+  byte status = mpu.begin();
+  Serial.print(F("MPU6050 status: "));
+  Serial.println(status);
+  while (status != 0) { } // Stop alles als er geen verbinding met MPU6050 is
+  Serial.println(F("Calculating offsets, do not move MPU6050"));
+  delay(1000);
+  mpu.calcOffsets(); // Gyroscoop en accelerometer kalibreren
+  Serial.println("Done!\n");
 }
 
 void loop() {
-    // Get gyroscope angles
-    float roll = mpu.getAngle(1);
-    float pitch = mpu.getAngle(2);
-    float yaw = mpu.getAngle(3);
+  mpu.update();
+  
+  // Haal gyrowaarden op
+  float gyroX = mpu.getAngleX();
+  float gyroY = mpu.getAngleY();
+  float gyroZ = mpu.getAngleZ();
+  
+  // Pas de high-pass filter toe op elke gyrowaarde
+  float currentX = highPassFilter(gyroX, previousX);
+  float currentY = highPassFilter(gyroY, previousY);
+  float currentZ = highPassFilter(gyroZ, previousZ);
+  
+//   // Pas het Kalman-filter toe op elke gefilterde gyrowaarde
+//   double filteredX = kalmanFilter(currentX);
+//   double filteredY = kalmanFilter(currentY);
+//   double filteredZ = kalmanFilter(currentZ);
 
-    // // Get magnetometer readings
-    // compass.read();
-    // int x = compass.getX();
-    // int y = compass.getY();
+    Serial.print("X : ");
+    Serial.print(round(currentX/4));
+    Serial.print("\tY : ");
+    Serial.print(round(currentY/4));
+    Serial.print("\tZ : ");
+    Serial.print(round(currentZ/4));
+    Serial.print("\tPos : ");
+    Serial.println(servoPos);
 
-    // // Calculate yaw angle from magnetometer
-    // float yaw_mag = atan2(y, x) * RAD_TO_DEG;
+    delay(50);
+  
+  if (servoPos < 180 && servoPos > 0){
+    if(round(currentZ)/4 > 0){
+      set(servoPos, servoPos - 1);
+      servoPos = servoPos - 1;
+    }
+    else if(round(currentZ)/4 < 0){
+      set(servoPos, servoPos + 1);
+      servoPos = servoPos + 1;
+    }
+  }
 
-    // // Correct yaw angle using magnetometer readings (yaw correction)
-    // float yaw_gyro = yawOffset + roll;
-
-    // // Combine gyro and magnetometer yaw angles using complementary filter
-    // // Alpha is a blending factor between gyro and mag readings (0 to 1)
-    // float alpha = 0.98; // You can adjust this value based on your requirements
-    // float yaw = alpha * yaw_gyro + (1 - alpha) * yaw_mag;
-
-    // Output yaw angle
-    Serial.print("roll: " + String(filter(roll), 0) + " pitch: " + String(filter(pitch), 0));
-    Serial.print(" yaw: " + String(filter(yaw), 0));
-    Serial.println();
-
-    // // Update yaw offset to account for gyro drift
-    // yawOffset = yaw;
-
-    delay(1); // Delay for stability
+  // Update vorige hoeken voor de volgende iteratie
+  previousX = currentX;
+  previousY = currentY;
+  previousZ = currentZ;
+  delay(50);
 }
