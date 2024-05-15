@@ -14,7 +14,7 @@ void Hmc5883::magneetSetup() {
 }
 
 float Hmc5883::getAngle() {
-  xmin=0; xmax=0; ymax=0; ymin = 0; zmin=0;zmax=0;
+  x_min=0; x_max=0; y_max=0; y_min = 0; z_min=0; z_max=0;
   Wire.beginTransmission(hmc_addr1);
   Wire.write(0x03); //select register 3, X MSB register
   Wire.endTransmission();

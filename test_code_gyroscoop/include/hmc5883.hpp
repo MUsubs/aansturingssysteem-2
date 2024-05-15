@@ -10,7 +10,7 @@ class Hmc5883{
 private:
     const int hmc_addr1 = 0x1E;
     int x,y,z;
-    int xmin,xmax,ymin,ymax,zmin,zmax;
+    int x_min,x_max,y_min,y_max,z_min,z_max;
 
 
 public:

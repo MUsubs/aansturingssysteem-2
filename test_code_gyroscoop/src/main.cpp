@@ -4,12 +4,12 @@
 
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
-Servo myservo;
+Servo my_servo;
 
 // High-pass filter variabelen
 float alpha = 0.8; // Instelbare filterfactor
-float previousX, previousY, previousZ;
-float servoPos = 90;
+float previous_x, previous_y, previous_z;
+float servo_pos = 90;
 
 
 // Kalman-filter variabelen
@@ -20,8 +20,8 @@ double P = 1;   // Geschatte foutcovariantie
 double K;       // Kalman-gain
 
 // Functie voor het toepassen van een high-pass filter
-float highPassFilter(float currentValue, float previousValue) {
-  return alpha * (previousValue + currentValue);
+float highPassFilter(float current_value, float previous_value) {
+  return alpha * (previous_value + current_value);
 }
 
 
@@ -31,14 +31,14 @@ void set(int pos, int val){
   if ( newer > older ){
     while ( newer > older ) {
       newer = newer - 1;
-      myservo.write(newer);
+      my_servo.write(newer);
       delay(50);
     }
   }
   if ( older > newer ) {
     while ( older > newer ) {
       newer = newer + 1;
-      myservo.write(newer);
+      my_servo.write(newer);
       delay(50);
     }
   }
@@ -61,7 +61,7 @@ void set(int pos, int val){
 void setup() {
   Serial.begin(115200);
   Wire.begin();
-  myservo.attach(9);
+  my_servo.attach(9);
   byte status = mpu.begin();
   Serial.print(F("MPU6050 status: "));
   Serial.println(status);
@@ -76,19 +76,19 @@ void loop() {
   mpu.update();
   
   // Haal gyrowaarden op
-  float gyroX = mpu.getAngleX();
-  float gyroY = mpu.getAngleY();
-  float gyroZ = mpu.getAngleZ();
+  float gyro_x = mpu.getAngleX();
+  float gyro_y = mpu.getAngleY();
+  float gyro_z = mpu.getAngleZ();
   
   // Pas de high-pass filter toe op elke gyrowaarde
-  float currentX = highPassFilter(gyroX, previousX);
-  float currentY = highPassFilter(gyroY, previousY);
-  float currentZ = highPassFilter(gyroZ, previousZ);
+  float current_x = highPassFilter(gyro_x, previous_x);
+  float current_y = highPassFilter(gyro_y, previous_y);
+  float current_z = highPassFilter(gyro_z, previous_z);
   
 //   // Pas het Kalman-filter toe op elke gefilterde gyrowaarde
-//   double filteredX = kalmanFilter(currentX);
-//   double filteredY = kalmanFilter(currentY);
-//   double filteredZ = kalmanFilter(currentZ);
+//   double filtered_x = kalmanFilter(current_x);
+//   double filtered_y = kalmanFilter(current_y);
+//   double filtered_z = kalmanFilter(current_z);
 
     Serial.print("X : ");
     Serial.print(round(currentX/4));
@@ -97,24 +97,24 @@ void loop() {
     Serial.print("\tZ : ");
     Serial.print(round(currentZ/4));
     Serial.print("\tPos : ");
-    Serial.println(servoPos);
+    Serial.println(servo_pos);
 
     delay(50);
   
-  if (servoPos < 180 && servoPos > 0){
-    if(round(currentZ)/4 > 0){
-      set(servoPos, servoPos - 1);
-      servoPos = servoPos - 1;
+  if (servo_pos < 180 && servo_pos > 0){
+    if(round(current_z)/4 > 0){
+      set(servo_pos, servo_pos - 1);
+      servo_pos = servo_pos - 1;
     }
-    else if(round(currentZ)/4 < 0){
-      set(servoPos, servoPos + 1);
-      servoPos = servoPos + 1;
+    else if(round(current_z)/4 < 0){
+      set(servo_pos, servo_pos + 1);
+      servo_pos = servo_pos + 1;
     }
   }
 
   // Update vorige hoeken voor de volgende iteratie
-  previousX = currentX;
-  previousY = currentY;
-  previousZ = currentZ;
+  previous_x = current_x;
+  previous_y = current_y;
+  previous_z = current_z;
   delay(50);
 }
