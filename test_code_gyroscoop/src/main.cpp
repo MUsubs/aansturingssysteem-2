@@ -1,6 +1,7 @@
 #include "Wire.h"
 #include <MPU6050_light.h>
 #include <Servo.h>
+#include <PID_v1.h>
 
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
@@ -11,6 +12,23 @@ float alpha = 0.8; // Instelbare filterfactor
 float previous_x, previous_y, previous_z;
 float servo_pos = 90;
 
+// PID variabelen
+
+char receivedChar;
+boolean newData = false;
+
+unsigned long changeTime = 0; //last time the sensor was triggered
+volatile unsigned long quarterSpins = 0;
+unsigned long currentTime = millis();
+double driverOut = 0;
+double difference = 0;
+double setPoint = 0;
+String inString;
+int Kp = 0;
+int Ki = 0;
+int Kd = 0;
+
+PID myPID(&difference, &driverOut, &setPoint,Kp,Ki,Kd, DIRECT);
 
 // Kalman-filter variabelen
 double Q = 0.1; // Procesruis
@@ -44,6 +62,7 @@ void set(int pos, int val){
   }
 }
 
+
 // // Functie voor het toepassen van het Kalman-filter
 // double kalmanFilter(double measurement) {
 //     // Voorspelling
@@ -59,7 +78,7 @@ void set(int pos, int val){
 // }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Wire.begin();
   my_servo.attach(9);
   byte status = mpu.begin();
@@ -81,40 +100,44 @@ void loop() {
   float gyro_z = mpu.getAngleZ();
   
   // Pas de high-pass filter toe op elke gyrowaarde
-  float current_x = highPassFilter(gyro_x, previous_x);
-  float current_y = highPassFilter(gyro_y, previous_y);
-  float current_z = highPassFilter(gyro_z, previous_z);
+  float current_x = highPassFilter( gyro_x, previous_x );
+  float current_y = highPassFilter( gyro_y, previous_y );
+  float current_z = highPassFilter( gyro_z, previous_z );
   
 //   // Pas het Kalman-filter toe op elke gefilterde gyrowaarde
 //   double filtered_x = kalmanFilter(current_x);
 //   double filtered_y = kalmanFilter(current_y);
 //   double filtered_z = kalmanFilter(current_z);
+    myPID.Compute();
 
     Serial.print("X : ");
-    Serial.print(round(currentX/4));
+    Serial.print(round(current_x/4));
     Serial.print("\tY : ");
-    Serial.print(round(currentY/4));
+    Serial.print(round(current_y/4));
     Serial.print("\tZ : ");
-    Serial.print(round(currentZ/4));
+    Serial.print(round(current_z/4));
     Serial.print("\tPos : ");
-    Serial.println(servo_pos);
+    Serial.print(servo_pos);
+    Serial.print("\out : ");
+    Serial.println(driverOut);
 
-    delay(50);
   
   if (servo_pos < 180 && servo_pos > 0){
-    if(round(current_z)/4 > 0){
-      set(servo_pos, servo_pos - 1);
-      servo_pos = servo_pos - 1;
+    if(round(driverOut)/4 > setPoint){
+      set(servo_pos, servo_pos + difference);
+      servo_pos = servo_pos + difference;
     }
-    else if(round(current_z)/4 < 0){
-      set(servo_pos, servo_pos + 1);
-      servo_pos = servo_pos + 1;
+    else if(round(driverOut)/4 < setPoint){
+      set(servo_pos, servo_pos + difference);
+      servo_pos = servo_pos + difference;
     }
   }
 
+  difference = setPoint - round( driverOut )/4;
+  driverOut = current_z;
   // Update vorige hoeken voor de volgende iteratie
   previous_x = current_x;
   previous_y = current_y;
   previous_z = current_z;
-  delay(50);
+  delay(4);
 }
