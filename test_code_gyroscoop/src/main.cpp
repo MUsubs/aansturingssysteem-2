@@ -13,8 +13,8 @@ float servo_pos = 90;
 
 
 // Kalman-filter variabelen
-double Q = 0.1; // Procesruis
-double R = 1;   // Meetruis
+double Q = 1; // Procesruis
+double R = 100;   // Meetruis
 double x = 0;   // Geschatte staat
 double P = 1;   // Geschatte foutcovariantie
 double K;       // Kalman-gain
