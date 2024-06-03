@@ -1,46 +1,56 @@
-#include "mpu6050.hpp"
+#include "Mpu6050.hpp"
 
-Mpu6050::Mpu6050() {
+
+Mpu6050::Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu )
+    : my_servo( my_servo ), mpu( mpu ) {}
+
+float Mpu6050::highPassFilter( float current_value, float previous_value ) {
+    return alpha * ( previous_value + current_value - alpha * previous_value );
 }
 
-
-// Setup for the MPU6050 gyroscope
-void Mpu6050::gyroscoopSetup() {
-    Wire.begin();                                      
-    Wire.beginTransmission(mpu_addr1);   
-    Wire.write(0x6B);       
-    Wire.write(0);
-    Wire.endTransmission(true);                        
-    Serial.begin(115200);
+void Mpu6050::setGyroUp(){
+    Wire.begin();
+    my_servo.attach( 9 );
+    byte status = mpu.begin();
+    delay( 1000 );
+    mpu.calcOffsets();
 }
 
-// Get the current angle detected by the gyroscope
-float Mpu6050::getAngle(int as) {
+float Mpu6050::PID(){
+    mpu.update();
+    float gyro_z = mpu.getAngleZ();
+    float current_z = highPassFilter( gyro_z, previous_z );
 
-  Wire.beginTransmission(mpu_addr1);
-  Wire.write(0x3B);  
-  Wire.endTransmission(false); 
-  Wire.requestFrom(mpu_addr1, 6, true); 
+    error = setpoint - current_z;
+    error_sum += error*dt;
+    error_div = ( error - error_prev ) / dt;
+    servo_pos = ( kp * error + ki * error_sum + kd * error_div );
+    error_prev = error;
 
-  x_as = Wire.read() << 8 | Wire.read();
-  y_as = Wire.read() << 8 | Wire.read();
-  z_as = Wire.read() << 8 | Wire.read();
-// formula from https://wiki.dfrobot.com/How_to_Use_a_Three-Axis_Accelerometer_for_Tilt_Sensing
-  roll = atan2(y_as , z_as) * 180.0 / PI;
-  pitch = atan2(-x_as , sqrt(y_as * y_as + z_as * z_as)) * 180.0 / PI;
-  
-  yaw = atan2(-x_as, y_as) * 180.0 / PI;
+    //debug prints :3
+    Serial.print( "Z :" );
+    Serial.print( round( current_z ) );
+    Serial.print( " setpont :" );
+    Serial.print( round( setpoint ) );
+    Serial.print( " Pos :" );
+    Serial.print( round( servo_pos ) );
+    Serial.print( " Dif :" );
+    Serial.println( round( error ) );
 
-  
-  roll += 1;
-  pitch += 2;
-  
-  // Geef de gevraagde hoek terug
-  if (as == 1){
-      return roll;
-  } else if (as == 2){
-      return pitch;
-  } else{
-    return yaw;
-  }
+    pos_prev = servo_pos;
+    previous_z = current_z;
+
+    return servo_pos;
+}
+
+float Mpu6050::getSetpoint(){
+  return setpoint;
+}
+
+float Mpu6050::getServo_pos(){
+  return servo_pos;
+}
+
+void Mpu6050::setSetpoint( float s ){
+  setpoint = s;
 }

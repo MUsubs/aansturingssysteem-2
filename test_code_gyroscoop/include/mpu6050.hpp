@@ -1,19 +1,38 @@
-#ifndef _MPU6050_HPP
-#define _MPU6050_HPP
+#ifndef R2D2_MPU6050_HPP
+#define R2D2_MPU6050_HPP
 
-#include <Wire.h>
-#include <Arduino.h>
+#include "Arduino.h"
+#include "Wire.h"
+#include <MPU6050_light.h>
+#include <PID_v1.h>
+#include <VarSpeedServo.h>
 
-class Mpu6050{
-private:
-    float x_as, y_as, z_as, roll, pitch, output, yaw;
-    const int mpu_addr1 = 0x68;
-
+class Mpu6050 {
 public:
-    Mpu6050();
-    void gyroscoopSetup();
-    float getAngle(int as);
-	
+    Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu );
+    float PID();
+    float getServo_pos();
+    float getSetpoint();
+    void setSetpoint(float s);
+    float highPassFilter(float current_value, float previous_value);
+    void setGyroUp();
+
+private:
+    VarSpeedServo& my_servo;
+    MPU6050& mpu;
+    float servo_pos = 0.0;
+    float pos_prev = 0;
+    float previous_z = 0.0;
+    const float alpha = 0.8;
+    double setpoint = 0.0;
+    double error = 0.0;
+    double error_sum = 0.0;
+    double error_prev = 0.0;
+    double error_div = 0.0;
+    const double kp = 0.725;
+    const double ki = 1.02;
+    const double kd = 0.01;
+    const double dt = 0.1;
 };
 
-#endif
+#endif //R2D2_MPU6050_HPP
