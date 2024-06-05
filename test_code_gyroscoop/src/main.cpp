@@ -85,14 +85,13 @@ void setup() {
 
 
 
-
-
   // Set initial angles (assuming starting from 0 degrees)
   angleX = 0.0f;
   angleY = 0.0f;
   angleZ = 0.0f;
 
   // it is best to leave this at the default value.
+  // you can change it if needed to fine tune the results
   kalmanFilter.setAngle(0.0f);
   kalmanFilter.setQangle(0.001f);
   kalmanFilter.setQbias(0.003f);
@@ -117,7 +116,7 @@ void loop() {
   // Calculate delta time
   unsigned long currentTime = millis();
   dt = (currentTime - prevTime) / 1000.0; // Convert milliseconds to seconds
-  prevTime = currentTime;
+  prevTime = currentTime
 
   // Update Kalman filters with gyro rates
   angleX = kalmanFilterX.getAngle(angleX, gyroXRate, dt);
