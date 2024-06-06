@@ -9,9 +9,9 @@ unsigned long timer = 0;
 Servo my_servo;
 Kalman kalman_filter;
 
-Kalman kalman_filterX;
-Kalman kalman_filterY;
-Kalman kalman_filterZ;
+Kalman kalman_filter_x;
+Kalman kalman_filter_y;
+Kalman kalman_filter_z;
 
 float angle_x, angle_y, angle_z;
 unsigned long prev_time;
@@ -110,19 +110,19 @@ void loop() {
     float gyro_y = mpu.getAngleY();
     float gyro_z = mpu.getAngleZ();
 
-    float gyroXRate = mpu.getGyroX(); // degrees per second
-    float gyroYRate = mpu.getGyroY(); // degrees per second
-    float gyroZRate = mpu.getGyroZ(); // degrees per second
+    float gyro_x_rate = mpu.getGyroX(); // degrees per second
+    float gyro_y_rate = mpu.getGyroY(); // degrees per second
+    float gyro_z_rate = mpu.getGyroZ(); // degrees per second
 
     // Calculate delta time
-    unsigned long currentTime = millis();
-    dt = (currentTime - prevTime) / 1000.0; // Convert milliseconds to seconds
-    prevTime = currentTime
+    unsigned long current_time = millis();
+    dt = (current_time - prev_time) / 1000.0; // Convert milliseconds to seconds
+    prev_time = current_time
 
     // Update Kalman filters with gyro rates
-    angleX = kalmanFilterX.getAngle(angleX, gyroXRate, dt);
-    angleY = kalmanFilterY.getAngle(angleY, gyroYRate, dt);
-    angleZ = kalmanFilterZ.getAngle(angleZ, gyroZRate, dt);
+    angle_x = kalman_filter_x.getAngle(angle_x, gyro_x_rate, dt);
+    angle_y = kalman_filter_y.getAngle(angle_y, gyro_y_rate, dt);
+    angle_z = kalman_filter_z.getAngle(angle_z, gyro_z_rate, dt);
 
     // Output the filtered angles
     Serial.print("Angle X: "); Serial.println(angleX);
