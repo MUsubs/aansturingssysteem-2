@@ -1,8 +1,5 @@
-#include "Mpu6050.hpp"
-
-
-Mpu6050::Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu )
-    : my_servo( my_servo ), mpu( mpu ) {}
+Mpu6050::Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu, Kalman& kalmanFilter  )
+    : my_servo( my_servo ), mpu( mpu ), kalmanFilter( kalmanFilter ) {}
 
 float Mpu6050::highPassFilter( float current_value, float previous_value ) {
     return alpha * ( previous_value + current_value - alpha * previous_value );
@@ -14,6 +11,12 @@ void Mpu6050::setGyroUp(){
     byte status = mpu.begin();
     delay( 1000 );
     mpu.calcOffsets();
+    kalmanFilter.setAngle(0.0f);
+    kalmanFilter.setQangle(0.001f);
+    kalmanFilter.setQbias(0.003f);
+    kalmanFilter.setRmeasure(0.03f);
+    prevTime = millis();
+
 }
 
 float Mpu6050::PID(){
@@ -68,4 +71,15 @@ void Mpu6050::Move(){
     my_servo.write(servo_pos+1);
     servo_pos = servo_pos + 1;
   }
+}
+
+float Mpu6050::kalman(){
+
+    currentTime = millis();
+
+    filteredAngle = kalmanFilter.getAngle(mpu.getAngleZ(), mpu.getAccZ(), (currentTime - prevTime) / 1000);
+
+    prevTime = currentTime;
+
+    return filteredAngle;
 }

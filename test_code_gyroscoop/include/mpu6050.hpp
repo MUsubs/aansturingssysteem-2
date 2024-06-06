@@ -4,12 +4,12 @@
 #include "Arduino.h"
 #include "Wire.h"
 #include <MPU6050_light.h>
-#include <PID_v1.h>
 #include <VarSpeedServo.h>
+#include "Kalman.h"
 
 class Mpu6050 {
 public:
-    Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu );
+    Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu, Kalman& kalmanFilter);
     float PID();
     float getServo_pos();
     float getSetpoint();
@@ -18,10 +18,12 @@ public:
     void setGyroUp();
     float getCurrent_z();
     void Move();
+    float kalman();
 
 private:
     VarSpeedServo& my_servo;
     MPU6050& mpu;
+    Kalman& kalmanFilter;
     float servo_pos = 0.0;
     float pos_prev = 0;
     float previous_z = 0.0;
@@ -35,6 +37,9 @@ private:
     const double ki = 1.02;
     const double kd = 0.01;
     const double dt = 0.1;
+    unsigned long currentTime = 0;
+    float prevTime = 0;
+    float filteredAngle = 0;
 };
 
 #endif //R2D2_MPU6050_HPP
