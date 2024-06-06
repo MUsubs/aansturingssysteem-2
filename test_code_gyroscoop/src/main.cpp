@@ -7,14 +7,14 @@
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
 Servo my_servo;
-Kalman kalmanFilter;
+Kalman kalman_filter;
 
-Kalman kalmanFilterX;
-Kalman kalmanFilterY;
-Kalman kalmanFilterZ;
+Kalman kalman_filterX;
+Kalman kalman_filterY;
+Kalman kalman_filterZ;
 
-float angleX, angleY, angleZ;
-unsigned long prevTime;
+float angle_x, angle_y, angle_z;
+unsigned long prev_time;
 float dt;
 
 
@@ -87,17 +87,17 @@ void setup() {
 
 
     // Set initial angles (assuming starting from 0 degrees)
-    angleX = 0.0f;
-    angleY = 0.0f;
-    angleZ = 0.0f;
+    angle_x = 0.0f;
+    angle_y = 0.0f;
+    angle_z = 0.0f;
 
     // it is best to leave this at the default value.
     // you can change it if needed to fine tune the results
-    kalmanFilter.setAngle(0.0f);
-    kalmanFilter.setQangle(0.001f);
-    kalmanFilter.setQbias(0.003f);
-    kalmanFilter.setRmeasure(0.03f);
-    prevTime = millis();
+    kalman_filter.setAngle(0.0f);
+    kalman_filter.setQangle(0.001f);
+    kalman_filter.setQbias(0.003f);
+    kalman_filter.setRmeasure(0.03f);
+    prev_time = millis();
 
 }
 
@@ -135,9 +135,9 @@ void loop() {
     float current_z = highPassFilter(gyro_z, previous_z);
 
 //   // Pas het Kalman-filter toe op elke gefilterde gyrowaarde
-//   double filtered_x = kalmanFilter(current_x);
-//   double filtered_y = kalmanFilter(current_y);
-//   double filtered_z = kalmanFilter(current_z);
+//   double filtered_x = kalman_filter(current_x);
+//   double filtered_y = kalman_filter(current_y);
+//   double filtered_z = kalman_filter(current_z);
 
 //    Serial.print("X : ");
 //    Serial.print(round(currentX/4));
