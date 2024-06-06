@@ -54,3 +54,18 @@ float Mpu6050::getServo_pos(){
 void Mpu6050::setSetpoint( float s ){
   setpoint = s;
 }
+
+float Mpu6050::getCurrent_z(){
+  mpu.update();
+  return mpu.getAngleZ();
+}
+
+void Mpu6050::Move(){
+  if (getCurrent_z() > setpoint){
+    my_servo.write(servo_pos-1);
+    servo_pos = servo_pos - 1;
+  }else if(getCurrent_z() < setpoint){
+    my_servo.write(servo_pos+1);
+    servo_pos = servo_pos + 1;
+  }
+}

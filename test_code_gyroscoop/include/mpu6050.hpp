@@ -16,6 +16,8 @@ public:
     void setSetpoint(float s);
     float highPassFilter(float current_value, float previous_value);
     void setGyroUp();
+    float getCurrent_z();
+    void Move();
 
 private:
     VarSpeedServo& my_servo;
