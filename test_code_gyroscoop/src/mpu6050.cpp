@@ -16,7 +16,7 @@ void Mpu6050::setGyroUp(){
     mpu.calcOffsets();
     kalmanFilter.setAngle(0.0f);
     kalmanFilter.setQangle(0.001f);
-    kalmanFilter.setQbias(0.001f);
+    kalmanFilter.setQbias(0.0067f);
     kalmanFilter.setRmeasure(0.075f);
     prevTime = millis();
 
