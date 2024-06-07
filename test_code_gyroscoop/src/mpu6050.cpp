@@ -1,3 +1,6 @@
+#include "mpu6050.hpp"
+
+
 Mpu6050::Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu, Kalman& kalmanFilter  )
     : my_servo( my_servo ), mpu( mpu ), kalmanFilter( kalmanFilter ) {}
 
@@ -13,8 +16,8 @@ void Mpu6050::setGyroUp(){
     mpu.calcOffsets();
     kalmanFilter.setAngle(0.0f);
     kalmanFilter.setQangle(0.001f);
-    kalmanFilter.setQbias(0.003f);
-    kalmanFilter.setRmeasure(0.03f);
+    kalmanFilter.setQbias(0.001f);
+    kalmanFilter.setRmeasure(0.075f);
     prevTime = millis();
 
 }
@@ -30,15 +33,15 @@ float Mpu6050::PID(){
     servo_pos = ( kp * error + ki * error_sum + kd * error_div );
     error_prev = error;
 
-    //debug prints :3
-    Serial.print( "Z :" );
-    Serial.print( round( current_z ) );
-    Serial.print( " setpont :" );
-    Serial.print( round( setpoint ) );
-    Serial.print( " Pos :" );
-    Serial.print( round( servo_pos ) );
-    Serial.print( " Dif :" );
-    Serial.println( round( error ) );
+//    //debug prints :3
+//    Serial.print( "Z :" );
+//    Serial.print( ( current_z ) );
+//    Serial.print( " setpont :" );
+//    Serial.print( ( setpoint ) );
+//    Serial.print( " Pos :" );
+//    Serial.print( ( servo_pos ) );
+//    Serial.print( " Dif :" );
+//    Serial.println( ( error ) );
 
     pos_prev = servo_pos;
     previous_z = current_z;
@@ -73,13 +76,21 @@ void Mpu6050::Move(){
   }
 }
 
-float Mpu6050::kalman(){
+void Mpu6050::kalman(){
 
     currentTime = millis();
 
-    filteredAngle = kalmanFilter.getAngle(mpu.getAngleZ(), mpu.getAccZ(), (currentTime - prevTime) / 1000);
+    servo_pos = kalmanFilter.getAngle(mpu.getAngleZ(), mpu.getAccZ(), (currentTime - prevTime) / 1000);
 
     prevTime = currentTime;
 
-    return filteredAngle;
+}
+
+float Mpu6050::mean(){
+
+    servo_pos += servo_pos;
+    int_count++;
+
+    return (servo_pos / int_count);
+
 }

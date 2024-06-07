@@ -18,7 +18,8 @@ public:
     void setGyroUp();
     float getCurrent_z();
     void Move();
-    float kalman();
+    void kalman();
+    float mean();
 
 private:
     VarSpeedServo& my_servo;
@@ -40,6 +41,7 @@ private:
     unsigned long currentTime = 0;
     float prevTime = 0;
     float filteredAngle = 0;
+    int int_count = 0;
 };
 
 #endif //R2D2_MPU6050_HPP

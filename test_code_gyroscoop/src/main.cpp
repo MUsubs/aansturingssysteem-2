@@ -25,11 +25,9 @@ void loop() {
     }
 
 
-    // my_servo.write( gyro.PID(), 30 );
-    //my_servo.write( gyro.PID(), 30 );
-
-    Serial.println(gyro.kalman());
-
+    gyro.kalman();
+    my_servo.write( gyro.PID(), 30 );
+    Serial.println(gyro.mean());
 
 
     delay( 50 );
