@@ -78,11 +78,11 @@ void Mpu6050::Move(){
 
 void Mpu6050::kalman(){
 
-    currentTime = millis();
+    current_time = millis();
 
-    servo_pos = kalmanFilter.getAngle(mpu.getAngleZ(), mpu.getAccZ(), (currentTime - prevTime) / 1000);
+    servo_pos = kalmanFilter.getAngle(mpu.getAngleZ(), mpu.getAccZ(), (current_time - prev_time) / 1000);
 
-    prevTime = currentTime;
+    prev_time = current_time;
 
 }
 

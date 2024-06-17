@@ -38,9 +38,9 @@ private:
     const double ki = 1.02;
     const double kd = 0.01;
     const double dt = 0.1;
-    unsigned long currentTime = 0;
-    float prevTime = 0;
-    float filteredAngle = 0;
+    unsigned long current_time = 0;
+    float prev_time = 0;
+    float filtered_angle = 0;
     int int_count = 0;
 };
 
