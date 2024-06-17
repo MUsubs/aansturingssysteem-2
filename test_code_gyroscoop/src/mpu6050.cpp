@@ -33,16 +33,6 @@ float Mpu6050::PID(){
     servo_pos = ( kp * error + ki * error_sum + kd * error_div );
     error_prev = error;
 
-//    //debug prints :3
-//    Serial.print( "Z :" );
-//    Serial.print( ( current_z ) );
-//    Serial.print( " setpont :" );
-//    Serial.print( ( setpoint ) );
-//    Serial.print( " Pos :" );
-//    Serial.print( ( servo_pos ) );
-//    Serial.print( " Dif :" );
-//    Serial.println( ( error ) );
-
     pos_prev = servo_pos;
     previous_z = current_z;
 
@@ -66,16 +56,6 @@ float Mpu6050::getCurrent_z(){
   return mpu.getAngleZ();
 }
 
-void Mpu6050::Move(){
-  if (getCurrent_z() > setpoint){
-    my_servo.write(servo_pos-1);
-    servo_pos = servo_pos - 1;
-  }else if(getCurrent_z() < setpoint){
-    my_servo.write(servo_pos+1);
-    servo_pos = servo_pos + 1;
-  }
-}
-
 void Mpu6050::kalman(){
 
     current_time = millis();
@@ -83,14 +63,5 @@ void Mpu6050::kalman(){
     servo_pos = kalmanFilter.getAngle(mpu.getAngleZ(), mpu.getAccZ(), (current_time - prev_time) / 1000);
 
     prev_time = current_time;
-
-}
-
-float Mpu6050::mean(){
-
-    servo_pos += servo_pos;
-    int_count++;
-
-    return (servo_pos / int_count);
 
 }
