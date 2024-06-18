@@ -7,9 +7,10 @@
 #include <VarSpeedServo.h>
 #include "Kalman.h"
 
-class Mpu6050 {
+class Mpu6050
+{
 public:
-    Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu, Kalman& kalmanFilter);
+    Mpu6050(VarSpeedServo &my_servo, MPU6050 &mpu, Kalman &kalmanFilter);
     float PID();
     float getServo_pos();
     float getSetpoint();
@@ -22,9 +23,9 @@ public:
     float mean();
 
 private:
-    VarSpeedServo& my_servo;
-    MPU6050& mpu;
-    Kalman& kalmanFilter;
+    VarSpeedServo &my_servo;
+    MPU6050 &mpu;
+    Kalman &kalmanFilter;
     float servo_pos = 0.0;
     float pos_prev = 0;
     float previous_z = 0.0;
@@ -44,4 +45,4 @@ private:
     int int_count = 0;
 };
 
-#endif //R2D2_MPU6050_HPP
+#endif // R2D2_MPU6050_HPP

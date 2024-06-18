@@ -4,7 +4,7 @@
 namespace asn
 {
 
-    class
+    class TravelControl
     {
     public:
         ();
