@@ -1,16 +1,17 @@
 #include "mpu6050.hpp"
 
-asn::Mpu6050::Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu,
-                       Kalman& kalmanFilter ) :
+namespace asn {
+
+Mpu6050::Mpu6050( VarSpeedServo& my_servo, MPU6050& mpu,
+                  Kalman& kalmanFilter ) :
     my_servo( my_servo ), mpu( mpu ), kalmanFilter( kalmanFilter ) {
 }
 
-float asn::Mpu6050::highPassFilter( float current_value,
-                                    float previous_value ) {
+float Mpu6050::highPassFilter( float current_value, float previous_value ) {
     return alpha * ( previous_value + current_value - alpha * previous_value );
 }
 
-void asn::Mpu6050::setGyroUp() {
+void Mpu6050::setGyroUp() {
     Wire.begin();
     my_servo.attach( 9 );
     byte status = mpu.begin();
@@ -23,7 +24,7 @@ void asn::Mpu6050::setGyroUp() {
     prevTime = millis();
 }
 
-float asn::Mpu6050::PID() {
+float Mpu6050::PID() {
     mpu.update();
     float gyro_z = mpu.getAngleZ();
     float current_z = highPassFilter( gyro_z, previous_z );
@@ -40,24 +41,24 @@ float asn::Mpu6050::PID() {
     return servo_pos;
 }
 
-float asn::Mpu6050::getSetpoint() {
+float Mpu6050::getSetpoint() {
     return setpoint;
 }
 
-float asn::Mpu6050::getServo_pos() {
+float Mpu6050::getServo_pos() {
     return servo_pos;
 }
 
-void asn::Mpu6050::setSetpoint( float s ) {
+void Mpu6050::setSetpoint( float s ) {
     setpoint = s;
 }
 
-float asn::Mpu6050::getCurrent_z() {
+float Mpu6050::getCurrent_z() {
     mpu.update();
     return mpu.getAngleZ();
 }
 
-void asn::Mpu6050::kalman() {
+void Mpu6050::kalman() {
     current_time = millis();
 
     servo_pos = kalmanFilter.getAngle( mpu.getAngleZ(), mpu.getAccZ(),
@@ -65,3 +66,5 @@ void asn::Mpu6050::kalman() {
 
     prev_time = current_time;
 }
+
+}  // namespace asn
