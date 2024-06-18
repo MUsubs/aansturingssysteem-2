@@ -1,15 +1,16 @@
 #ifndef R2D2_TRAVELCONTROL_HPP
 #define R2D2_TRAVELCONTROL_HPP
 
-namespace asn {
+namespace asn
+{
 
-class  {
-public:
-    ();
+    class
+    {
+    public:
+        ();
 
-private:
-    
-};
+    private:
+    };
 
-}  // namespace 
-#endif  // R2D2_TRAVELCONTROL_HPP
+} // namespace
+#endif // R2D2_TRAVELCONTROL_HPP
