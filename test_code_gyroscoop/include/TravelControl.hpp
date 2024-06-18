@@ -4,12 +4,14 @@
 namespace asn
 {
 
-class  TravelControl{
-public:
-    void calculateRotation();
+    class TravelControl
+    {
+    public:
+        TravelControl();
+        void calculateRotation();
 
-private:
-};
+    private:
+    };
 
 } // namespace
 #endif // R2D2_TRAVELCONTROL_HPP
