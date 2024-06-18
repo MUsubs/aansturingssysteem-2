@@ -1,32 +1,37 @@
-#include "Wire.h"
-#include "mpu6050.hpp"
-
-
-VarSpeedServo my_servo;
-MPU6050 mpu( Wire );
-Kalman kalmanFilter;
-Mpu6050 gyro( my_servo, mpu, kalmanFilter);
-unsigned long timer = 0;
-
+#include <SPI.h>
+#include <LoRa.h>
 
 void setup() {
-    Serial.begin( 9600 );
-    Wire.begin();
-    gyro.setGyroUp();
+    Serial.begin(9600);
+    while (!Serial);
+
+    //LoRa.setPins(ss, reset, dio0);
+
+    LoRa.setSPIFrequency(40);
+
+    Serial.println("LoRa Receiver");
+
+
+    if (!LoRa.begin(868E6)) {
+        Serial.println("Starting LoRa failed!");
+        while (1);
+    }
 }
 
 void loop() {
+    // try to parse packet
+    int packetSize = LoRa.parsePacket();
+    if (packetSize) {
+        // received a packet
+        Serial.print("Received packet '");
 
-    if ( Serial.available() > 0 ) {
-      String inputString = Serial.readStringUntil( '\n' );
-      gyro.setSetpoint( inputString.toFloat() );
+        // read packet
+        while (LoRa.available()) {
+            Serial.print((char)LoRa.read());
+        }
+
+        // print RSSI of packet
+        Serial.print("' with RSSI ");
+        Serial.println(LoRa.packetRssi());
     }
-
-
-    gyro.kalman();
-    my_servo.write( gyro.PID(), 30 );
-    Serial.println(gyro.mean());
-
-
-    delay( 50 );
 }
