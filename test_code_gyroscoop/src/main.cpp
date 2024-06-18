@@ -13,8 +13,6 @@ void setup() {
     Serial.begin( 9600 );
     Wire.begin();
     gyro.setGyroUp();
-
-
 }
 
 void loop() {
