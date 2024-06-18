@@ -4,7 +4,9 @@ asn::TravelControl::TravelControl() {
 }
 
 void asn::TravelControl::calculateRotation() {
-    
+    float angle = acos((prev_x * dest_x) + (prev_z * dest_z) / (sqrt((prev_x)^2 + (prev_z)^2) * sqrt((dest_x)^2 + (dest_z)^2)));
+    angle = angle * (180 / (atan(1) * 4));
+    dummyMotor.adjust(angle);
 }
 
 void asn::TravelControl::stop() {
