@@ -5,7 +5,7 @@ namespace  {
 
 class  {
 public:
-    ();
+    void calculateRotation();
 
 private:
     
