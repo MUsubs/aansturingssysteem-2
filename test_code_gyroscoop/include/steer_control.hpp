@@ -16,6 +16,7 @@ public:
 
 private:
     float steer_action;
+    float previous_z = 0.0;
     float pos_prev = 0.0;
     double setpoint = 0.0;
     double error = 0.0;
