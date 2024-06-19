@@ -13,8 +13,10 @@ public:
     void setSetpoint(float s);
     float PID();
     void sendMove();
+    float highPassFilter(float current_value, float previous_value);
 
 private:
+    Mpu6050 &mpu;
     float steer_action;
     float previous_z = 0.0;
     float pos_prev = 0.0;
@@ -27,6 +29,7 @@ private:
     const double ki = 1.02;
     const double kd = 0.01;
     const double dt = 0.1;
+    const float alpha = 0.8;
 };
 
 } // namespace asn

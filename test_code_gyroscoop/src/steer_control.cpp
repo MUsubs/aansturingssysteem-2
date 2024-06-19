@@ -10,6 +10,10 @@ void SteerControl::setSetpoint(float s){
     setpoint = s;
 }
 
+float SteerControl::highPassFilter(float current_value, float previous_value){
+    return alpha * (previous_value + current_value - alpha * previous_value);
+}
+
 float SteerControl::PID() {
     float gyro_z = mpu.getCurrent_z();
     float current_z = highPassFilter(gyro_z, previous_z);
@@ -35,5 +39,6 @@ void SteerControl::sendMove() {
         delay( 50 );
     }
 }
+
 
 } // namespace asn

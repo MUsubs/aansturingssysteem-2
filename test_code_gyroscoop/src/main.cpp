@@ -10,7 +10,7 @@ static uint8_t button_pins[4] = { 16, 17, 26, 27 };
 asn::MotorControl motorControl( motor_pins );
 MPU6050 mpu( Wire );
 Kalman kalmanFilter;
-MPU6050 gyro( mpu, kalmanFilter );
+asn::Mpu6050 gyro( mpu, kalmanFilter);
 
 void setup() {
     Wire.begin();
@@ -23,24 +23,24 @@ void setup() {
 
 void loop() {
     if ( digitalRead( button_pins[0] ) == HIGH ) {
-        asn::motorControl.move( motorControl.direction_t::FORWARD );
+        motorControl.move( motorControl.direction_t::FORWARD );
         delay( 50 );
-        asn::motorControl.move( motorControl.direction_t::STOP );
+        motorControl.move( motorControl.direction_t::STOP );
     }
     if ( digitalRead( button_pins[1] ) == HIGH ) {
-        asn::motorControl.move( motorControl.direction_t::BACKWARD );
+        motorControl.move( motorControl.direction_t::BACKWARD );
         delay( 50 );
-        asn::motorControl.move( motorControl.direction_t::STOP );
+        motorControl.move( motorControl.direction_t::STOP );
     }
     if ( digitalRead( button_pins[2] ) == HIGH ) {
-        asn::motorControl.move( motorControl.direction_t::UP );
+        motorControl.move( motorControl.direction_t::UP );
         delay( 50 );
-        asn::motorControl.move( motorControl.direction_t::STOP );
+        motorControl.move( motorControl.direction_t::STOP );
     }
     if ( digitalRead( button_pins[3] ) == HIGH ) {
-        asn::motorControl.move( motorControl.direction_t::DOWN );
+        motorControl.move( motorControl.direction_t::DOWN );
         delay( 50 );
-        asn::motorControl.move( motorControl.direction_t::STOP );
+        motorControl.move( motorControl.direction_t::STOP );
     }
 }
 
