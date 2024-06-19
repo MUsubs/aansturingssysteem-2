@@ -2,26 +2,27 @@
 
 namespace asn {
 
-SteerControl::SteerControl(Mpu6050 &mpu) : mpu(mpu)
-{
+SteerControl::SteerControl( Mpu6050 &mpu, MotorControl &motorControl ) :
+    mpu( mpu ), motorControl( motorControl ) {
 }
 
-void SteerControl::setSetpoint(float s){
+void SteerControl::setSetpoint( float s ) {
     setpoint = s;
 }
 
-float SteerControl::highPassFilter(float current_value, float previous_value){
-    return alpha * (previous_value + current_value - alpha * previous_value);
+float SteerControl::highPassFilter( float current_value,
+                                    float previous_value ) {
+    return alpha * ( previous_value + current_value - alpha * previous_value );
 }
 
 float SteerControl::PID() {
     float gyro_z = mpu.getCurrent_z();
-    float current_z = highPassFilter(gyro_z, previous_z);
+    float current_z = highPassFilter( gyro_z, previous_z );
 
     error = setpoint - current_z;
     error_sum += error * dt;
-    error_div = (error - error_prev) / dt;
-    steer_action = (kp * error + ki * error_sum + kd * error_div);
+    error_div = ( error - error_prev ) / dt;
+    steer_action = ( kp * error + ki * error_sum + kd * error_div );
     error_prev = error;
 
     pos_prev = steer_action;
@@ -31,14 +32,13 @@ float SteerControl::PID() {
 }
 
 void SteerControl::sendMove() {
-    if ( round( gyro.getCurrent_z() ) < steer_action ) {
+    if ( round( mpu.getCurrent_z() ) < steer_action ) {
         motorControl.move( motorControl.direction_t::LEFT );
         delay( 50 );
-    } else if ( round( gyro.getCurrent_z() ) > steer_action ) {
+    } else if ( round( mpu.getCurrent_z() ) > steer_action ) {
         motorControl.move( motorControl.direction_t::RIGHT );
         delay( 50 );
     }
 }
 
-
-} // namespace asn
+}  // namespace asn

@@ -2,7 +2,9 @@
 
 namespace asn {
 
-TravelControl::TravelControl() {
+TravelControl::TravelControl( MotorControl &motorControl,
+                              SteerControl &steerControl ) :
+    motorControl( motorControl ), steerControl( steerControl ) {
 }
 
 void TravelControl::calculateRotation() {
@@ -19,7 +21,6 @@ void TravelControl::stop() {
 }
 
 void TravelControl::newDest() {
-    
 }
 
 void TravelControl::updateCurPos() {

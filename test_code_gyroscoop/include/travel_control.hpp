@@ -10,13 +10,15 @@ namespace asn {
 class TravelControl
 {
 public:
-    TravelControl();
+    TravelControl(MotorControl &motorControl, SteerControl &steerControl);
     void calculateRotation();
     void stop();
     void newDest();
     void updateCurPos();
 
 private:
+    MotorControl &motorControl;
+    SteerControl &steerControl;
     float dest_x;
     float dest_y;
     float dest_z;
