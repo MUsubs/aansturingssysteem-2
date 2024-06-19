@@ -75,3 +75,5 @@ namespace asn
 
         prevTime = currentTime;
     }
+
+} // namespace asn
