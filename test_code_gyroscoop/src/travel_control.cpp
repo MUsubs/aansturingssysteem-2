@@ -11,7 +11,7 @@ void TravelControl::calculateRotation(const float cur_x, const float cur_z) {
     float angle = acos( (((cur_x - prev_x) * (dest_x - cur_x)) +
                         ((cur_z - prev_z) *  (dest_z - cur_z))) /
                             ( sqrt( pow((cur_x - prev_x), 2) + pow((cur_z - prev_z), 2)) *
-                              sqrt( pow((dest_x - cur_x), 2) + pow(dest_z - cur_z, 2))) );
+                              sqrt( pow((dest_x - cur_x), 2) + pow((dest_z - cur_z), 2))) );
     angle = angle * ( 180 / ( atan( 1 ) * 4 ) );
     Serial.println(angle);
     steerControl.setSetpoint( angle );
