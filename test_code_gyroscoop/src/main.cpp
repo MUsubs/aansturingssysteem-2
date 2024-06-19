@@ -7,10 +7,10 @@
 // aansturing 1 main:
 static uint8_t motor_pins[7] = { 22, 21, 20, 19, 18, 12, 13 };
 static uint8_t button_pins[4] = { 16, 17, 26, 27 };
-MotorControl motorControl( motor_pins );
+asn::MotorControl motorControl( motor_pins );
 MPU6050 mpu( Wire );
 Kalman kalmanFilter;
-Mpu6050 gyro( mpu, kalmanFilter );
+MPU6050 gyro( mpu, kalmanFilter );
 
 void setup() {
     Wire.begin();
