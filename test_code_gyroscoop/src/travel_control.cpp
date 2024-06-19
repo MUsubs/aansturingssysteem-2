@@ -7,12 +7,14 @@ TravelControl::TravelControl( MotorControl &motorControl,
     motorControl( motorControl ), steerControl( steerControl ) {
 }
 
-void TravelControl::calculateRotation() {
-    float angle = acos( ( prev_x * dest_x ) +
-                        ( prev_z * dest_z ) /
-                            ( sqrt( pow(prev_x, 2) + pow(prev_z, 2) ) *
-                              sqrt( pow(dest_x, 2) + pow(dest_z, 2) ) ) );
+void TravelControl::calculateRotation(const float cur_x, const float cur_z) {
+    float angle = acos( (((cur_x - prev_x) * (dest_x - cur_x)) +
+                        ((cur_z - prev_z) *  (dest_z - cur_z))) /
+                            ( sqrt( pow(prev_x, 2) + pow(prev_z, 2)) *
+                              sqrt( pow(dest_x, 2) + pow(dest_z, 2)) *
+                              sqrt( pow(cur_x,2) + pow(cur_z, 2))) );
     angle = angle * ( 180 / ( atan( 1 ) * 4 ) );
+    Serial.println(angle);
     steerControl.setSetpoint( angle );
 }
 

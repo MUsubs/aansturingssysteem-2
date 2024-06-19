@@ -3,6 +3,8 @@
 #include "motor.hpp"
 #include "motor_control.hpp"
 #include "mpu6050.hpp"
+#include "travel_control.hpp"
+#include "steer_control.hpp"
 
 // aansturing 1 main:
 static uint8_t motor_pins[7] = { 22, 21, 20, 19, 18, 12, 13 };
@@ -11,6 +13,8 @@ asn::MotorControl motorControl( motor_pins );
 MPU6050 mpu( Wire );
 Kalman kalmanFilter;
 asn::Mpu6050 gyro( mpu, kalmanFilter);
+asn::SteerControl steer(gyro, motorControl);
+asn::TravelControl travel(motorControl, steer);
 
 void setup() {
     Wire.begin();
@@ -22,26 +26,29 @@ void setup() {
 }
 
 void loop() {
-    if ( digitalRead( button_pins[0] ) == HIGH ) {
-        motorControl.move( motorControl.direction_t::FORWARD );
-        delay( 50 );
-        motorControl.move( motorControl.direction_t::STOP );
-    }
-    if ( digitalRead( button_pins[1] ) == HIGH ) {
-        motorControl.move( motorControl.direction_t::BACKWARD );
-        delay( 50 );
-        motorControl.move( motorControl.direction_t::STOP );
-    }
-    if ( digitalRead( button_pins[2] ) == HIGH ) {
-        motorControl.move( motorControl.direction_t::UP );
-        delay( 50 );
-        motorControl.move( motorControl.direction_t::STOP );
-    }
-    if ( digitalRead( button_pins[3] ) == HIGH ) {
-        motorControl.move( motorControl.direction_t::DOWN );
-        delay( 50 );
-        motorControl.move( motorControl.direction_t::STOP );
-    }
+    travel.calculateRotation(0.38, 0.87);
+    delay(1000);
+    // if ( digitalRead( button_pins[0] ) == HIGH ) {
+    //     motorControl.move( motorControl.direction_t::FORWARD );
+    //     delay( 50 );
+    //     motorControl.move( motorControl.direction_t::STOP );
+    // }
+    // if ( digitalRead( button_pins[1] ) == HIGH ) {
+    //     motorControl.move( motorControl.direction_t::BACKWARD );
+    //     delay( 50 );
+    //     motorControl.move( motorControl.direction_t::STOP );
+    // }
+    // if ( digitalRead( button_pins[2] ) == HIGH ) {
+    //     motorControl.move( motorControl.direction_t::UP );
+    //     delay( 50 );
+    //     motorControl.move( motorControl.direction_t::STOP );
+    // }
+    // if ( digitalRead( button_pins[3] ) == HIGH ) {
+    //     motorControl.move( motorControl.direction_t::DOWN );
+    //     delay( 50 );
+    //     motorControl.move( motorControl.direction_t::STOP );
+    // }
+
 }
 
 // aansturing 2 main:

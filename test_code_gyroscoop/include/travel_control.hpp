@@ -11,7 +11,7 @@ class TravelControl
 {
 public:
     TravelControl(MotorControl &motorControl, SteerControl &steerControl);
-    void calculateRotation();
+    void calculateRotation(const float cur_x, const float cur_z);
     void stop();
     void newDest();
     void updateCurPos();
@@ -19,12 +19,12 @@ public:
 private:
     MotorControl &motorControl;
     SteerControl &steerControl;
-    float dest_x;
+    float dest_x = 0.64;
     float dest_y;
-    float dest_z;
-    float prev_x;
+    float dest_z = 0.12;
+    float prev_x = 0.23;
     float prev_y;
-    float prev_z;
+    float prev_z = 0.99;
     float goal_direction;
 };
 
