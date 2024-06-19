@@ -12,8 +12,7 @@ namespace asn
     public:
         SteerControl(Mpu6050 &mpu, MotorControl &motorControl);
         void setSetpoint(float s);
-        float PID();
-        void sendMove();
+        void PID();
         float highPassFilter(float current_value, float previous_value);
 
     private:
