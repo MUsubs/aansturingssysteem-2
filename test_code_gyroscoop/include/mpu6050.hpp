@@ -16,7 +16,6 @@ namespace asn
         float PID();
         float getSetpoint();
         void setSetpoint(float s);
-        float highPassFilter(float current_value, float previous_value);
         void setUpGyro();
         float getCurrent_z();
         void kalman();
