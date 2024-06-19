@@ -2,8 +2,7 @@
 #define R2D2_MPU6050_HPP
 
 #include <MPU6050_light.h>
-
-#include "Arduino.h"
+#include <Arduino.h>
 #include "Kalman.h"
 #include "Wire.h"
 
