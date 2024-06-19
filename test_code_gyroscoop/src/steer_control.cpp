@@ -15,7 +15,7 @@ float SteerControl::highPassFilter( float current_value,
     return alpha * ( previous_value + current_value - alpha * previous_value );
 }
 
-float SteerControl::PID() {
+void SteerControl::PID() {
     float gyro_z = mpu.getCurrent_z();
     float current_z = highPassFilter( gyro_z, previous_z );
 
@@ -28,10 +28,6 @@ float SteerControl::PID() {
     pos_prev = steer_action;
     previous_z = current_z;
 
-    return steer_action;
-}
-
-void SteerControl::sendMove() {
     if ( round( mpu.getCurrent_z() ) < steer_action ) {
         motorControl.move( motorControl.direction_t::LEFT );
         delay( 50 );
