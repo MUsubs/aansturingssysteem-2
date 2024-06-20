@@ -17,13 +17,6 @@ void Mpu6050::setUpGyro() {
     kalmanFilter.setRmeasure( 0.075f );
     prevTime = millis();
 }
-float Mpu6050::getSetpoint() {
-    return setpoint;
-}
-
-void Mpu6050::setSetpoint( float s ) {
-    setpoint = s;
-}
 
 float Mpu6050::getCurrent_z() {
     mpu.update();
