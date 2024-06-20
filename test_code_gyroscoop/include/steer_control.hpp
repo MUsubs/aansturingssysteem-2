@@ -7,7 +7,7 @@
 namespace asn
 {
 /**
- * @class Class SteerControl.hpp
+ * @class Class steer_control.hpp
  * @brief A class that controls the steering of the submarine.
  */
     class SteerControl

@@ -25,7 +25,7 @@ namespace asn
         void setUpGyro();
         /**
          * @brief Returns the current z angle of the mpu6050
-         * @return mpu.getAngleZ
+         * @return The Z-angle as calculated by the mpu6050
          */
         float getCurrent_z();
         /**
