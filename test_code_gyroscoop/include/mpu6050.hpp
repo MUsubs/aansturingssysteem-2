@@ -3,7 +3,6 @@
 
 #include <MPU6050_light.h>
 #include <Arduino.h>
-#include "Kalman.h"
 #include "Wire.h"
 
 namespace asn
@@ -16,7 +15,7 @@ namespace asn
     class Mpu6050
     {
     public:
-        Mpu6050(MPU6050 &mpu, Kalman &kalmanFilter);
+        Mpu6050(MPU6050 &mpu);
         /**
          * @brief Starts the setup sequence of the mpu6050
          * @details Starts the mpu6050 and applies a delay of 1 second so the mpu6050 can calibrate itself.
@@ -28,15 +27,13 @@ namespace asn
          * @return The Z-angle as calculated by the mpu6050
          */
         float getCurrent_z();
-        /**
-         * @brief Applies a kalman filter to the output of the mpu6050
-         * @details Uses a kalman library to calculate a kalman filter for the mpu6050
-         */
-        void kalman();
+
+        float getAcc_z();
+        
+        
 
     private:
         MPU6050 &mpu;
-        Kalman &kalmanFilter;
         float output = 0;
         unsigned long currentTime = 0;
         float prevTime = 0;

@@ -3,6 +3,7 @@
 
 #include "mpu6050.hpp"
 #include "motor_control.hpp"
+#include "Kalman.h"
 
 namespace asn
 {
@@ -13,7 +14,7 @@ namespace asn
     class SteerControl
     {
     public:
-        SteerControl(Mpu6050 &mpu, MotorControl &motorControl);
+        SteerControl(Mpu6050 &mpu, MotorControl &motorControl, Kalman &kalmanFilter);
         /**
          * @brief Sets the setpoint to a given value.
          * @param s The parameter to set the setpoint to.
@@ -23,6 +24,8 @@ namespace asn
          * @brief Implements a PID to reduce measurement noise.
          */
         void PID();
+        void kalman();
+        void setUpSteerControl();
 
     private:
     /**
@@ -35,6 +38,7 @@ namespace asn
 
         Mpu6050 &mpu;
         MotorControl &motorControl;
+        Kalman &kalmanFilter;
         float steer_action;
         float previous_z = 0.0;
         float pos_prev = 0.0;
@@ -48,6 +52,9 @@ namespace asn
         const double kd = 0.01;
         const double dt = 0.1;
         const float alpha = 0.8;
+        float output = 0;
+        unsigned long currentTime = 0;
+        float prevTime = 0;
     };
 
 } // namespace asn
