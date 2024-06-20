@@ -3,31 +3,78 @@
 #include "motor.hpp"
 #include "motor_control.hpp"
 #include "mpu6050.hpp"
-#include "travel_control.hpp"
+#include "dummyControl.hpp"
 #include "steer_control.hpp"
+#include "travel_control.hpp"
 
-// aansturing 1 main:
+#include <FreeRTOS.h>
+
+using namespace asn;
+
+xTaskHandle motor_control_task_handle;
+xTaskHandle steer_control_task_handle;
+xTaskHandle travel_control_task_handle;
+xTaskHandle dummy_control_task_handle;
+
 static uint8_t motor_pins[7] = { 22, 21, 20, 19, 18, 12, 13 };
 static uint8_t button_pins[4] = { 16, 17, 26, 27 };
-asn::MotorControl motorControl( motor_pins );
-MPU6050 mpu( Wire );
 Kalman kalmanFilter;
-asn::Mpu6050 gyro( mpu, kalmanFilter);
-asn::SteerControl steer(gyro, motorControl);
-asn::TravelControl travel(motorControl, steer);
+MPU6050 gyro( Wire );
+Mpu6050 mpu( gyro, kalmanFilter );
+MotorControl motor_control( motor_pins );
+SteerControl steer_control( mpu, motor_control );
+TravelControl travel_control( motor_control, steer_control);
+DummyControl dummy_control( travel_control );
+
+
+
+void motorControlTask( void* pvParameters ){
+    motor_control.main();
+}
+
+void steerControlTask( void* pvParameters ){
+    steer_control.main();
+}
+
+void travelControlTask( void* pvParameters ){
+    travel_control.main();
+}
+
+void dummyControlTask( void* pvParameters ){
+    dummy_control.main();
+}
 
 void setup() {
+    Serial.begin(115200);
     Wire.begin();
-    gyro.setUpGyro();
-    Serial.begin( 115200 );
-    adc_init();
-    adc_set_temp_sensor_enabled( true );
-    adc_select_input( 4 );
+    mpu.setUpGyro();
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+
+    Serial.println("Creating tasks...");
+    // auto return_motor = xTaskCreate(motorControlTask, "MotorControl task", 2048, NULL, 1, &motor_control_task_handle);
+    auto return_steer = xTaskCreate(steerControlTask, "SteerControl task", 2048, NULL, 1, &steer_control_task_handle);
+    // auto return_travel = xTaskCreate(travelControlTask, "TravelControl task", 2048, NULL, 1, &travel_control_task_handle);
+    auto return_dummy = xTaskCreate(dummyControlTask, "DummyControl task", 2048, NULL, 1, &dummy_control_task_handle);
+    if (return_dummy != pdPASS) {
+        Serial.println("Motor task creation failed");
+        vTaskDelete(dummy_control_task_handle);
+    } else {
+        Serial.println("Tasks created successfully.");
+    }
 }
 
 void loop() {
-    travel.calculateRotation(0.38, 0.87);
-    delay(1000);
+    // Serial.print( "graden: " + String( round( gyro.getCurrent_z() ) ) );
+    // if ( round( gyro.getCurrent_z() ) < gyro.getSetpoint() ) {
+    //     Serial.println( " left " );
+    //     motorControl.move( motorControl.direction_t::LEFT );
+    //     delay( 50 );
+    // } else if ( round( gyro.getCurrent_z() ) > gyro.getSetpoint() ) {
+    //     Serial.println( " right " );
+    //     motorControl.move( motorControl.direction_t::RIGHT );
+    //     delay( 50 );
+    // }
     // if ( digitalRead( button_pins[0] ) == HIGH ) {
     //     motorControl.move( motorControl.direction_t::FORWARD );
     //     delay( 50 );
@@ -48,36 +95,4 @@ void loop() {
     //     delay( 50 );
     //     motorControl.move( motorControl.direction_t::STOP );
     // }
-
 }
-
-// aansturing 2 main:
-
-// #include "Wire.h"
-// #include "mpu6050.hpp"
-
-// VarSpeedServo my_servo;
-// MPU6050 mpu( Wire );
-// Kalman kalmanFilter;
-// Mpu6050 gyro( my_servo, mpu, kalmanFilter);
-// unsigned long timer = 0;
-
-// void setup() {
-//     Serial.begin( 9600 );
-//     Wire.begin();
-//     gyro.setUpGyro();
-// }
-
-// void loop() {
-
-//     if ( Serial.available() > 0 ) {
-//       String inputString = Serial.readStringUntil( '\n' );
-//       gyro.setSetpoint( inputString.toFloat() );
-//     }
-
-//     gyro.kalman();
-//     my_servo.write( gyro.PID(), 30 );
-//     Serial.println(gyro.mean());
-
-//     delay( 50 );
-// }

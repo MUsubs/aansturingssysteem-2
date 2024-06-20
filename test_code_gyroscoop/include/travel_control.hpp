@@ -15,7 +15,7 @@ class TravelControl
 {
 public:
     TravelControl(MotorControl &motorControl, SteerControl &steerControl);
-    /**
+     /**
      * @brief Calculates the needed rotation.
      * @details Calculates the rotation in degrees that the submarine
      * must make in order to get on course to the destination.
@@ -28,7 +28,8 @@ public:
      */
     void stop();
     void newDest();
-    void updateCurPos();
+    void updateCurPos(const float cur_x, const float cur_z);
+    void main();
 
 private:
     MotorControl &motorControl;

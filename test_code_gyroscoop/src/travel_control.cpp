@@ -24,7 +24,17 @@ void TravelControl::stop() {
 void TravelControl::newDest() {
 }
 
-void TravelControl::updateCurPos() {
+void TravelControl::updateCurPos(const float cur_x, const float cur_z) {
+    calculateRotation( cur_x, cur_z );
+    prev_x = cur_x;
+    prev_z = cur_z;
+    // iets met flags want draai
+}
+
+void TravelControl::main() {
 }
 
 }  // namespace asn
+
+// angle = cos^-1((a_x * b_x) + (a_z * b_z) / (sqrt((a_x)^2 + (a_z)^2) *
+// sqrt((b_x)^2 + (b_z)^2)))

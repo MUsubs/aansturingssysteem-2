@@ -28,6 +28,7 @@ namespace asn
          * @brief Initializes SteerControl and Kalman variables and starts the setup for the mpu6050.
          */
         void setUpSteerControl();
+        void main();
 
     private:
     /**
@@ -41,6 +42,7 @@ namespace asn
          * @brief Applies Kalman filter to the steering action.
          */
         void kalman();
+
 
         Mpu6050 &mpu;
         MotorControl &motorControl;
