@@ -593,6 +593,9 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+# MacOS automatically added files
+.DS_Store
+
 # JetBrains Rider
 *.sln.iml
 
