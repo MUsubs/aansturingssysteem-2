@@ -24,6 +24,9 @@ namespace asn
          * @brief Implements a PID to reduce measurement noise.
          */
         void PID();
+        /**
+         * @brief Initializes SteerControl and Kalman variables and starts the setup for the mpu6050.
+         */
         void setUpSteerControl();
 
     private:
@@ -34,6 +37,9 @@ namespace asn
      * @return Returns a filtered value.
      */
         float highPassFilter(float current_value, float previous_value);
+        /**
+         * @brief Applies Kalman filter to the steering action.
+         */
         void kalman();
 
         Mpu6050 &mpu;
