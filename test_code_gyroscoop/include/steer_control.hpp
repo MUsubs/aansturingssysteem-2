@@ -24,7 +24,6 @@ namespace asn
          * @brief Implements a PID to reduce measurement noise.
          */
         void PID();
-        void kalman();
         void setUpSteerControl();
 
     private:
@@ -35,6 +34,7 @@ namespace asn
      * @return Returns a filtered value.
      */
         float highPassFilter(float current_value, float previous_value);
+        void kalman();
 
         Mpu6050 &mpu;
         MotorControl &motorControl;
@@ -52,7 +52,6 @@ namespace asn
         const double kd = 0.01;
         const double dt = 0.1;
         const float alpha = 0.8;
-        float output = 0;
         unsigned long currentTime = 0;
         float prevTime = 0;
     };

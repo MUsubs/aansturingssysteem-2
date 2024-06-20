@@ -40,7 +40,7 @@ void SteerControl::PID() {
 void SteerControl::kalman() {
     currentTime = millis();
 
-    output = kalmanFilter.getAngle( mpu.getCurrent_z(), mpu.getAcc_z(),
+    steer_action = kalmanFilter.getAngle( mpu.getCurrent_z(), mpu.getAcc_z(),
                                     ( currentTime - prevTime ) / 1000 );
 
     prevTime = currentTime;
