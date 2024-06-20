@@ -36,11 +36,6 @@ namespace asn
 
     private:
         MPU6050 &mpu;
-        float output = 0;
-        unsigned long currentTime = 0;
-        float prevTime = 0;
-        float filteredAngle = 0;
-        int int_count = 0;
     };
 
 }

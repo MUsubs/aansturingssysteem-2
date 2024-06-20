@@ -11,7 +11,6 @@ void Mpu6050::setUpGyro() {
     byte status = mpu.begin();
     delay( 1000 );
     mpu.calcOffsets();
-    
 }
 
 float Mpu6050::getCurrent_z() {
