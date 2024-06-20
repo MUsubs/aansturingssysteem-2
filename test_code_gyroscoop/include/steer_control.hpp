@@ -6,15 +6,28 @@
 
 namespace asn
 {
-
+/**
+ * @class Class SteerControl.hpp
+ * @brief A class that controls the steering of the submarine
+ */
     class SteerControl
     {
     public:
         SteerControl(Mpu6050 &mpu, MotorControl &motorControl);
+        /**
+         * @brief Sets the setpoint to a given value.
+         * @param s The parameter to set the setpoint to.
+         */
         void setSetpoint(float s);
+        /**
+         * @brief Implements a PID to reduce noise.
+         */
         void PID();
 
     private:
+    /**
+     * @Laurens650 YEET
+     */
         float highPassFilter(float current_value, float previous_value);
 
         Mpu6050 &mpu;
