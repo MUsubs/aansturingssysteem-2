@@ -19,7 +19,6 @@ namespace asn
         /**
          * @brief Starts the setup sequence of the mpu6050
          * @details Starts the mpu6050 and applies a delay of 1 second so the mpu6050 can calibrate itself.
-         * The parameters of the kalman filter are also setup here.
          */
         void setUpGyro();
         /**
@@ -27,7 +26,10 @@ namespace asn
          * @return The Z-angle as calculated by the mpu6050
          */
         float getCurrent_z();
-
+        /**
+         * @brief Returns the current z acceleration of the mpu6050
+         * @return The Z-acceleration as calculated by the mpu6050
+         */
         float getAcc_z();
         
         
