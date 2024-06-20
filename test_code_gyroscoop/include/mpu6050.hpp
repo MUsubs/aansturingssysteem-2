@@ -8,13 +8,30 @@
 
 namespace asn
 {
+    /**
+     * @class Class mpu6050.hpp
+     * @brief A class that controls the mpu6050 gyroscope
+     */
 
     class Mpu6050
     {
     public:
         Mpu6050(MPU6050 &mpu, Kalman &kalmanFilter);
+        /**
+         * @brief Starts the setup sequence of the mpu6050
+         * @details Starts the mpu6050 and applies a delay of 1 second so the mpu6050 can calibrate itself.
+         * The parameters of the kalman filter are also setup here.
+         */
         void setUpGyro();
+        /**
+         * @brief Returns the current z angle of the mpu6050
+         * @return mpu.getAngleZ
+         */
         float getCurrent_z();
+        /**
+         * @brief Applies a kalman filter to the output of the mpu6050
+         * @details Uses a kalman library to calculate a kalman filter for the mpu6050
+         */
         void kalman();
 
     private:
