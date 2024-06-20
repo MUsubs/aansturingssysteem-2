@@ -9,7 +9,7 @@
 namespace asn
 {
     /**
-     * @class Class mpu6050.hpp
+     * @class Class Mpu6050 mpu6050.hpp
      * @brief A class that controls the mpu6050 gyroscope
      */
 
