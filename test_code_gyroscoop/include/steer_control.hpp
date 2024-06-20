@@ -8,7 +8,7 @@ namespace asn
 {
 /**
  * @class Class SteerControl.hpp
- * @brief A class that controls the steering of the submarine
+ * @brief A class that controls the steering of the submarine.
  */
     class SteerControl
     {
@@ -20,13 +20,16 @@ namespace asn
          */
         void setSetpoint(float s);
         /**
-         * @brief Implements a PID to reduce noise.
+         * @brief Implements a PID to reduce measurement noise.
          */
         void PID();
 
     private:
     /**
-     * @Laurens650 YEET
+     * @brief Implements a high-pass filter to reduce measurement noise.
+     * @param current_value The currently held value of the filter.
+     * @param previous_value The previously held value of the filter.
+     * @return Returns a filtered value.
      */
         float highPassFilter(float current_value, float previous_value);
 
