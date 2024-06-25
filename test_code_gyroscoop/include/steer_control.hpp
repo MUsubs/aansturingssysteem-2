@@ -29,6 +29,9 @@ namespace asn
          */
         void setUpSteerControl();
         void main();
+        
+        void disable();
+        void enable();
 
     private:
     /**
@@ -55,13 +58,16 @@ namespace asn
         double error_sum = 0.0;
         double error_prev = 0.0;
         double error_div = 0.0;
-        const double kp = 0.725;
-        const double ki = 1.02;
-        const double kd = 0.01;
+        const double kp = 1.0;
+        const double ki = 0.0;
+        const double kd = 0.0;
         const double dt = 0.1;
         const float alpha = 0.8;
         unsigned long currentTime = 0;
         float prevTime = 0;
+        const int wait_time = 50;
+
+        bool stop;
     };
 
 } // namespace asn

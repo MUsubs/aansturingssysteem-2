@@ -1,6 +1,7 @@
 #include "motor_control.hpp"
 
-namespace asn {
+namespace asn
+{
 
 MotorControl::MotorControl( uint8_t *pins ) : motor( pins ) {
     directions_queue = xQueueCreate( 10, sizeof( direction_t));
@@ -42,13 +43,13 @@ void MotorControl::main() {
                     motor.setMotor( motor.depth, true, false );
                     break;
                 case STOP:
-                    Serial.println( "STOP" );
+                    // Serial.println( "STOP" );
                     motor.setMotor( motor.steer, false, false );
                     motor.setMotor( motor.speed, false, false );
                     motor.setMotor( motor.depth, false, false );
                     break;
                 default:
-                    Serial.println("aaaaaaaa");
+                    // Serial.println("aaaaaaaa");
                     break;
             }
         }
