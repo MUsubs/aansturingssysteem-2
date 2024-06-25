@@ -13,19 +13,24 @@
 
 namespace sen {
 
-const uint8_t SUB_LORA_ADDRESS = 0x33;
-const uint8_t LAND_LORA_ADDRESS = 0x0B;
+const uint8_t SUB_LORA_ADDRESS = 0x51;
+const uint8_t LAND_LORA_ADDRESS = 0x11;
 
 class DataTransceiver {
 public:
-    DataTransceiver( const uint8_t SUB_LORA_ADDRESS, const uint8_t LAND_LORA_ADDRESS );
+    DataTransceiver( const uint8_t sub_address, const uint8_t land_address, bool is_sub );
 
-    void sendBytes( std::deque bytes );
+    void sendBytes( std::vector<uint8_t>& bytes );
     uint8_t generateInstructionHeader( Instruction_t inst, uint8_t n_bytes );
     uint8_t generateUpdateHeader( uint8_t data_id, uint8_t n_bytes );
     uint8_t generateSensHeader( Sensor_t sensor, uint8_t n_bytes );
 
 private:
+
+    uint8_t sub_address;
+    uint8_t land_address;
+    bool is_sub;
+
     void run();
     static void staticRun();
     void passMessages();

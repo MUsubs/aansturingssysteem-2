@@ -2,12 +2,13 @@
 
 namespace sen {
 // public
-DataTransceiver::DataTransceiver( uint8_t SUB_LORA_ADDRESS, uint8_t LAND_LORA_ADDRESS ) :
-    SUB_LORA_ADDRESS( SUB_LORA_ADDRESS ), LAND_LORA_ADDRESS( LAND_LORA_ADDRESS ) {
+DataTransceiver::DataTransceiver( const uint8_t sub_address, const uint8_t land_address, bool is_sub ) :
+    sub_address( sub_address ), land_address( land_address ), is_sub( is_sub ) {
 }
 
-void DataTransceiver::sendBytes( int bytes ) {
+void DataTransceiver::sendBytes( std::vector<uint8_t>& bytes ) {
 }
+
 int DataTransceiver::generateInstructionHeader( int inst, int n_bytes ) {
     return 0;
 }
@@ -26,16 +27,29 @@ void DataTransceiver::staticRun() {
 
 void DataTransceiver::passMessages() {
     int packetSize = LoRa.parsePacket();
-    std::vector<byte> loraMessage;
-        for ( auto iterator = begin( vector ); iterator != end( vector ); iterator++ ) {
-            MessageInterpreter.byteReceived(iterator);
-        } MessageInterpreter.messageDone();
+    byte recipient = 0;
+    if ( packetSize > 0 ) {
+        recipient = LoRa.read();
+    } else {
+        return;
+    }
+    if ( recipient != ( is_sub ? sub_address : land_address ) ) {
+        for ( int i = 0; i < packetSize; i++ ) {
+            LoRa.read();
+        }
+        return;
+    }
+    for ( int i = 0; i < packetSize; i++ ) {
+        MessageInterpreter.byteReceived( LoRa.read() );
+    }
+    MessageInterpreter.messageDone();
 }
 
-void DataTransceiver::writeMessage( const int &bytes ) {
+void DataTransceiver::writeMessage( const std::vector<uint8_t>& bytes ) {
     LoRa.beginPacket();
-    for ( auto iterator = begin( vector ); iterator != end( vector ); iterator++ ) {
-        LoRa.write( iterator );
+    LoRa.write( is_sub ? sub_address : land_address );
+    for ( const auto& b : bytes ) {
+        LoRa.write( b );
     }
     LoRa.endPacket();
 }
